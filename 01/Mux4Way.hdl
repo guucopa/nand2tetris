@@ -1,0 +1,33 @@
+// Mux4Way16を作るのが大変なのでまず4入力1出力のマルチプレクサを作る
+
+/**
+ * 4-way 1-bit multiplexor:
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+ */
+
+CHIP Mux4Way {
+    IN a, b, c, d, sel[2];
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+    Not(in=sel[0], out=notsel0);
+    Not(in=sel[1], out=notsel1);
+    
+    And(a=notsel0, b=notsel1, out=aflag);
+    And(a=sel[0], b=notsel1, out=bflag);
+    And(a=notsel0, b=sel[1], out=cflag);
+    And(a=sel[0], b=sel[1], out=dflag);
+
+    And(a=a, b=aflag, out=w1);
+    And(a=b, b=bflag, out=w2);
+    And(a=c, b=cflag, out=w3);
+    And(a=d, b=dflag, out=w4);
+
+    Or(a=w1, b=w2, out=tmp1);
+    Or(a=w3, b=w4, out=tmp2);
+    Or(a=tmp1, b=tmp2, out=out);
+}

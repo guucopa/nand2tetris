@@ -1,0 +1,63 @@
+// Mux8Way16を作るのが大変なのでまず8入力1出力のマルチプレクサを作る
+
+/**
+ * 8-way 1-bit multiplexor:
+ * out = a if sel == 000
+ *       b if sel == 001
+ *       etc.
+ *       h if sel == 111
+ */
+
+CHIP Mux8Way {
+    IN a, b, c, d, e, f, g, h, sel[3];
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+    Not(in=sel[0], out=notsel0);
+    Not(in=sel[1], out=notsel1);
+    Not(in=sel[2], out=notsel2);
+
+    //aflag
+    And(a=notsel0, b=notsel1, out=atmp);
+    And(a=atmp, b=notsel2, out=aflag);
+    
+    //bflag
+    And(a=sel[0], b=notsel1, out=btmp);
+    And(a=btmp, b=notsel2, out=bflag);
+
+    //cflag
+    And(a=notsel0, b=sel[1], out=ctmp);
+    And(a=ctmp, b=notsel2, out=cflag);
+
+    //dflag
+    And(a=sel[0], b=sel[1], out=dtmp);
+    And(a=dtmp, b=notsel2, out=dflag);
+
+    //eflag
+    And(a=notsel0, b=notsel1, out=etmp);
+    And(a=etmp, b=sel[2], out=eflag);
+
+    //fflag
+    And(a=sel[0], b=notsel1, out=ftmp);
+    And(a=ftmp, b=sel[2], out=fflag);
+
+    //gflag
+    And(a=notsel0, b=sel[1], out=gtmp);
+    And(a=gtmp, b=sel[2], out=gflag);
+
+    //hflag
+    And(a=sel[0], b=sel[1], out=htmp);
+    And(a=htmp, b=sel[2], out=hflag);
+
+    And(a=a, b=aflag, out=w1);
+    And(a=b, b=bflag, out=w2);
+    And(a=c, b=cflag, out=w3);
+    And(a=d, b=dflag, out=w4);
+    And(a=e, b=eflag, out=w5);
+    And(a=f, b=fflag, out=w6);
+    And(a=g, b=gflag, out=w7);
+    And(a=h, b=hflag, out=w8);
+
+    Or8Way(in[0]=w1, in[1]=w2, in[2]=w3, in[3]=w4, in[4]=w5, in[5]=w6, in[6]=w7, in[7]=w8, out=out);
+}
